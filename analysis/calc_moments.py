@@ -1,28 +1,52 @@
-# This file's purpose is to calculate the statistical moments of Johnson Noise
+import os
 
-# Step 1 was to capture traces at certain settings (settings can be found in lab session logs)
-
-# The oscilloscope (GW-INSTEK 1052-U) creates csv files, in the format:
-# These files can be saved to a local machine
-
-# Step 2 is writing a function that can be called when appropriate to load the data from multiple csv's
-# into the appropriate data sctructure.
-
-# Function load_run: takes a LOG folder path. It finds all the CSV files inside, calls load_trace on each one,
-# and stacks the voltage arrays into one structure- either a list of arrays or a 2D array where each row is one trace.
-# It also sanity-checks that all the headers match (same vertical scale, same sampling period).
-# Returns the collection of traces plus the shared metadata.
-def load_run(folder_path):
-
-    return 0
-
-# Function load_trace: takes a single CSV path. It reads the 16 header lines and pulls out the values
-# (vertical scale, sampling period). Then it reads the remaining 4,000 integers,
-# converts them to volts using the ADC formula you derived, builds the time array from the sampling period,
-#  and returns all of it- the voltage array, the time array, and the header metadata as a dictionary or similar.
-def load_trace(file_path):
-    print("I received a trace from " + file_path)
-    return 0
+# Function load_trace: takes a single CSV file path from the GW-Instek GDS-1052-U oscilloscope.
+# Reads the 16-line header and parses vertical scale (V/div) and sampling period (s).
+# Converts the 4,000 raw ADC counts to volts using V = count * (vertical_scale / 25).
+# Builds the time array using t[n] = n * sampling_period.
+# Returns vertical scale, sampling period, voltage array, and time array.
 
 
-trace = load_trace("data/amp_noise/LOG0000/DS0000.CSV")
+def load_trace(file_name):
+    file_object = open(file_name, "r")                  # Open file
+    lines = file_object.readlines()                     # Return each line in the csv as a stringl store in variable, lines
+    # print(lines[16:])                                 # For debugging; skips metadata (first 16 lines)
+
+    vertical_scale = float(lines[5].split(",")[1])      # Parse metadata, convert string to float to store vertical scale
+    sampling_period = float(lines[11].split(",")[1])    # ^ Same, but for sampling period metadata
+
+    voltages = []                                       # Loop to convert each line to an integer, multiply by vertical_scale /25 to put it into volts
+    for line in lines[16:]:
+        count = int(line.strip().rstrip(","))           # .strip() removes the newline, then .rstrip(",") removes the trailing comma
+        voltages.append(count * vertical_scale / 25)
+
+    time = []                                           # Building the time array the same way
+    for i in range(len(voltages)):
+        time.append(i * sampling_period)
+
+    file_object.close()                                 # Close file
+
+    return vertical_scale, sampling_period, voltages, time
+
+
+
+# Function load_run: takes a directory path containing LOG folders from the oscilloscope.
+# Loops through each LOG folder, finds all CSV files inside, and calls load_trace on each one.
+# Collects all voltage arrays into a list where each element is one trace (4,000 voltage samples).
+# Returns the full collection of traces across all runs.
+
+
+def load_run(path):
+    all_voltages = []
+    for folder in os.listdir(path):                         # Loop through LOG folders
+        if folder.startswith("LOG"):                        # Skip .DS_Store and other non-data entries
+            for file in os.listdir(path + "/" + folder):    # Loop through CSV files in each LOG folder
+                if file.endswith(".CSV"):
+                    vert_scale, sampling_period, voltages, time = load_trace(path + "/" + folder + "/" + file)
+                    all_voltages.append(voltages)           # Append each trace's voltage array to the collection
+    
+    return all_voltages
+
+all_voltages = load_run("data/amp_noise")               # Change hardcoded path to change which directory is passed to load_run
+
+print(len(all_voltages))
