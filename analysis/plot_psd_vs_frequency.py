@@ -1,10 +1,14 @@
 # plot_psd_vs_freq.py
 #
-#  Plots mean PSD (V²/Hz) vs frequency for all resistor values on a single
+# Plots mean PSD (V²/Hz) vs frequency for all resistor values on a single
 # axes with log-log scaling. Error bands show run-to-run std. Imports
 # spectra list from calc_spectra.py.
-
-# IN PROGRESS - NEED analyze_frequency_response.py FIRST TO NORMALIZE
+#
+# The PSD here is raw (not normalized by the amplifier transfer function).
+# Normalization by |H(f)|^2 comes in extract_kB.py after NEBW is confirmed.
+#
+# Inputs:  spectra list from calc_spectra.py
+# Outputs: plots/psd_vs_freq.png
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,17 +33,16 @@ for R, freq, mean_psd, std_psd, mean_vsd, std_vsd in spectra:
         label = labels.get(R, str(R) + " Ω")
     seen.add(R)
 
+    # Skip DC bin (index 0) -- always zero or artifactual
     ax.loglog(freq[1:], mean_psd[1:], label=label)
-    ax.fill_between(freq[1:],
-                    mean_psd[1:] - std_psd[1:],
-                    mean_psd[1:] + std_psd[1:],
-                    alpha=0.2)
 
 ax.set_xlabel("Frequency (Hz)")
 ax.set_ylabel("PSD (V²/Hz)")
 ax.set_title("Power Spectral Density vs Frequency")
-ax.legend()
+ax.legend(loc='upper right')
 ax.grid(True, which="both", linestyle="--", alpha=0.5)
+ax.set_xlim(freq[1], 20000)
+ax.set_ylim(1e-7, 1e-3)
 plt.tight_layout()
 plt.savefig("plots/psd_vs_freq.png", dpi=150)
 plt.show()
