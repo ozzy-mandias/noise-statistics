@@ -1,9 +1,5 @@
 # calc_spectra.py
 #
-# AI DISCLAIMER: An AI tool (LLM) was used to assist in generating this
-# comment for readability. The experimental methodology, analysis design,
-# and code implementation are the author's own work.
-#
 # Computes Power Spectral Density (PSD, V²/Hz) and Voltage Spectral Density
 # (VSD, V/√Hz) from raw oscilloscope voltage traces.
 #
@@ -34,7 +30,7 @@ from calc_moments import load_run, load_trace
 # ---------------------------------------------------------------------------
 # Sample rate -- confirmed same across all runs
 # ---------------------------------------------------------------------------
-_, sampling_period, _, _ = load_trace("data/johnson_noise/10_ohms/LOG0003/DS0000.CSV")
+_, sampling_period, _, _ = load_trace("data/johnson_noise/10_ohms/LOG_10_OHM_run_1_gain_300_294.1K/DS0000.CSV")
 fs = 1 / sampling_period   # 25 MHz
 
 # Decimate to bring fs down to a range where Welch bins land in the passband.
@@ -48,13 +44,22 @@ fs_eff = fs / DECIMATION_FACTOR
 # (R, [path_run_a, path_run_b, path_run_c])
 # ---------------------------------------------------------------------------
 resistors = [
-    (10,      ["data/johnson_noise/10_ohms/LOG0003",   "data/johnson_noise/10_ohms/LOG0004",   "data/johnson_noise/10_ohms/LOG0005"]),
-    (100,     ["data/johnson_noise/100_ohms/LOG0006",  "data/johnson_noise/100_ohms/LOG0007",  "data/johnson_noise/100_ohms/LOG0008"]),
-    (1000,    ["data/johnson_noise/1k_ohms/LOG0009",   "data/johnson_noise/1k_ohms/LOG0010",   "data/johnson_noise/1k_ohms/LOG0011"]),
-    (10000,   ["data/johnson_noise/10k_ohms/LOG0012",  "data/johnson_noise/10k_ohms/LOG0013",  "data/johnson_noise/10k_ohms/LOG0014"]),
-    (10000,   ["data/johnson_noise/10k_ohms/LOG0015",  "data/johnson_noise/10k_ohms/LOG0016",  "data/johnson_noise/10k_ohms/LOG0017"]),  # labeled repeat
-    (100000,  ["data/johnson_noise/100k_ohms/LOG0018", "data/johnson_noise/100k_ohms/LOG0019", "data/johnson_noise/100k_ohms/LOG0020"]),
-    (1000000, ["data/johnson_noise/1M_ohm/LOG0021",    "data/johnson_noise/1M_ohm/LOG0022",    "data/johnson_noise/1M_ohm/LOG0023"]),
+    (10,      ["data/johnson_noise/10_ohms/LOG_10_OHM_run_1_gain_300_294.1K",
+               "data/johnson_noise/10_ohms/LOG_10_OHM_run_2_gain_300_294.1K",
+               "data/johnson_noise/10_ohms/LOG_10_OHM_run_3_gain_300_294.2K"]),
+    (100,     ["data/johnson_noise/100_ohms/LOG_100_OHM_run_1_gain_300_294.6K",
+               "data/johnson_noise/100_ohms/LOG_100_OHM_run_2_gain_300_294.6K",
+               "data/johnson_noise/100_ohms/LOG_100_OHM_run_3_gain_300_294.6K"]),
+    (1000,    ["data/johnson_noise/1k_ohms/LOG_1_kOHM_run_1_gain_300_294.7K",
+               "data/johnson_noise/1k_ohms/LOG_1_kOHM_run_2_gain_300_294.7K",
+               "data/johnson_noise/1k_ohms/LOG_1_kOHM_run_3_gain_300_294.8K"]),
+    (10000,   ["data/johnson_noise/10k_ohms/LOG_10_kOHM_run_1_gain_300_294.8K",
+               "data/johnson_noise/10k_ohms/LOG_10_kOHM_run_2_gain_300_294.6K",
+               "data/johnson_noise/10k_ohms/LOG_10_kOHM_run_3_gain_300_294.7K"]),
+    (1000000, ["data/johnson_noise/1M_ohm/LOG_1_MOHM_run_1_gain_200_297.5K",
+               "data/johnson_noise/1M_ohm/LOG_1_MOHM_run_2_gain_200_297.5K",
+               "data/johnson_noise/1M_ohm/LOG_1_MOHM_run_3_gain_200_297.6K"]),
+    # 100 kΩ pending data collection
 ]
 
 spectra = []

@@ -1,64 +1,87 @@
-# Noise Statistics as Information
+# Johnson Noise as an Experimental Test of the Jaynes Maximum-Entropy Framework
 
-San Jose State University, Department of Physics & Astronomy
-Spring 2026
+PHYS 120B · San José State University · Spring 2026
+Author: Akhilan Celeis Raja · Advisor: Dr. Peter Beyersdorf
 
-Advisor: Dr. Peter Beyersdorf
+## Quick Links
 
-## What This Project Is About
+- **Paper:** [`paper/main.tex`](paper/main.tex)
+- **Data:** [`data/`](data/)
+- **Analysis scripts:** [`analysis/`](analysis/)
+- **Figures:** [`plots/`](plots/)
 
-Noise is usually treated as something to filter out. This project takes the opposite approach: we treat noise as a source of information about the physical system producing it. Starting from Johnson-Nyquist thermal noise, we measure voltage time-series data from resistors, compute statistical moments, and look for what the noise distribution can tell us about the underlying physics.
+## What This Is
 
-## Project Phases
+Source code, data, and analysis for a paper testing the Jaynes
+(1957) maximum-entropy interpretation of statistical mechanics
+through Johnson noise measurements across 77–300 K.
 
-**Phase I (Weeks 1-5):** Measure thermal noise voltage V(t) across different resistors, compute the first four statistical moments (mean, variance, skewness, kurtosis), and verify that the noise follows a Gaussian distribution as predicted by theory.
+## Reproducing the Figures
 
-**Phase II (Weeks 6-10):** Look for deviations from ideal Gaussian noise that might reveal hidden physical structure in the system.
+All scripts read from `data/` and write to `plots/`.
 
-**Phase III (Weeks 11-15):** Develop uncertainty quantification frameworks using noise statistics as a measurement tool.
+```bash
+python analysis/calc_moments.py           # → moments table (printed)
+python analysis/plot_histograms.py        # → plots/histograms.png
+python analysis/plot_psd_vs_frequency.py  # → plots/psd_vs_freq.png
+python analysis/plot_moments.py           # → plots/moments.png
+python analysis/extract_kB.py            # → plots/kB_extraction.png
+```
 
-## Apparatus
-
-- TeachSpin Noise Fundamentals (noise source and signal conditioning)
-- GW-INSTEK GDS-1052-U oscilloscope (time-domain waveform capture, USB CSV export, 4,000 pts/trace)
-- SR1 Audio Analyzer (spectral analysis where appropriate)
-
-## Repository Structure
+## Directory Structure
 
 ```
-noise-statistics/
-├── phase1/
-├── phase2/
-├── phase3/
-├── analysis/
-│   └── calc_moments.py
+├── analysis/              Analysis and plotting scripts
+│   ├── calc_moments.py        Statistical moments for each resistor
+│   ├── calc_spectra.py        PSD computation from voltage traces
+│   ├── extract_kB.py          k_B extraction from variance vs R
+│   ├── plot_histograms.py     Amplitude distributions + Gaussian fits
+│   ├── plot_moments.py        Skewness/kurtosis vs resistance
+│   └── plot_psd_vs_frequency.py   PSD vs frequency for all resistors
+│
 ├── data/
-│   └── raw/
-├── docs/
-│   └── session_logs/
-├── .gitignore
-├── LICENSE
+│   ├── amp_noise/             Amplifier baseline (10 Ω, noise subtraction)
+│   └── johnson_noise/         Voltage traces by resistor value
+│       ├── 10_ohms/
+│       ├── 100_ohms/
+│       ├── 1k_ohms/
+│       ├── 10k_ohms/
+│       ├── 100k_ohms/
+│       └── 1M_ohm/
+│
+├── plots/                 Generated figures for the paper
+│
+├── paper/                 LaTeX source
+│   ├── main.tex
+│   ├── refs.bib
+│   └── bridge_diagram.tex
+│
+├── sr1_scripts/           SR1 audio analyzer utilities
+│
 └── README.md
 ```
 
-## Data Naming Convention
+## Data Format
 
-Raw waveform files follow this pattern:
+Each trace is a CSV exported from the GW-INSTEK GDS-1052-U.
+Folder names encode the run metadata:
 
 ```
-noise_V_R<value>_T<temp>K_<trial>.csv
+LOG_<R>_run_<N>_gain_<G2>_<T>K
 ```
 
-Example: `noise_V_R100_T295K_003.csv` is the third trial of a 100 ohm resistor at 295 K.
+Example: `LOG_1_kOHM_run_1_gain_300_294.7K` is run 1 of the
+1 kΩ resistor at gain G₂ = 300 and temperature 294.7 K.
 
-## Key Physics
+## Status
 
-The variance of thermal noise voltage across a resistor is predicted by the Johnson-Nyquist relation:
-
-⟨V²⟩ = 4 k_B T R Δf
-
-where k_B is Boltzmann's constant, T is temperature, R is resistance, and Δf is the measurement bandwidth. For ideal thermal noise, the distribution should be Gaussian: the mean is zero, the variance encodes temperature and resistance, and the third and fourth moments (skewness and kurtosis) serve as diagnostics for deviations from that ideal.
+| Component | Status |
+|---|---|
+| Room-temperature phenomenology | Complete |
+| k_B from resistance dependence | 1.2% agreement with CODATA |
+| Temperature-dependent measurements (77–300 K) | Pending |
+| Paper | Theory and appendices written; results awaiting data |
 
 ## License
 
-CC BY-NC-ND 4.0. See [LICENSE](LICENSE).
+CC BY-NC-ND 4.0

@@ -3,8 +3,8 @@
 # Plots statistical moments (variance, skewness, kurtosis) vs resistor value.
 # Imports results list from calc_moments.py.
 #
-# Currently one data point (1 MΩ). Log x-axis will be restored once
-# measurements for remaining resistor values are collected.
+# Active resistors: 10 Ω, 100 Ω, 1 kΩ, 10 kΩ, 1 MΩ.
+# 100 kΩ pending data collection.
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -22,14 +22,17 @@ fig, axes = plt.subplots(3, 1, figsize=(8, 12))
 
 # Variance vs R
 axes[0].errorbar(R_vals, corr_vars, yerr=var_errs, fmt='o', capsize=4)
+axes[0].set_xscale("log")
+axes[0].set_yscale("log")
 axes[0].set_xlabel("Resistance (Ω)")
 axes[0].set_ylabel("Corrected Variance (V²)")
 axes[0].set_title("Variance vs Resistance")
-axes[0].grid(True, linestyle="--", alpha=0.5)
+axes[0].grid(True, which="both", linestyle="--", alpha=0.5)
 
 # Skewness vs R
 axes[1].errorbar(R_vals, skews, yerr=skew_errs, fmt='o', capsize=4)
 axes[1].axhline(0, color="red", linestyle="--", label="Expected: 0")
+axes[1].set_xscale("log")
 axes[1].set_xlabel("Resistance (Ω)")
 axes[1].set_ylabel("Skewness")
 axes[1].set_title("Skewness vs Resistance")
@@ -39,6 +42,7 @@ axes[1].grid(True, linestyle="--", alpha=0.5)
 # Kurtosis vs R
 axes[2].errorbar(R_vals, kurts, yerr=kurt_errs, fmt='o', capsize=4)
 axes[2].axhline(3, color="red", linestyle="--", label="Expected: 3")
+axes[2].set_xscale("log")
 axes[2].set_xlabel("Resistance (Ω)")
 axes[2].set_ylabel("Kurtosis")
 axes[2].set_title("Kurtosis vs Resistance")

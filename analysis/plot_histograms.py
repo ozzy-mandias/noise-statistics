@@ -4,15 +4,17 @@
 # measured resistor value. Visually confirms Gaussianity of Johnson noise.
 # Imports raw run data and moment results from calc_moments.py.
 #
-# Currently active: amplifier baseline (gain 300, gain 200) and 1 MΩ.
-# Other resistor values commented out pending data collection.
+# Currently active: 10 Ω, 100 Ω, 1 kΩ, 10 kΩ, 1 MΩ.
+# 100 kΩ pending data collection.
 
 import numpy as np
 import matplotlib.pyplot as plt
 from calc_moments import (
-    run1, run2, run3,
-    run4, run5, run6,
     run7, run8, run9,
+    run10, run11, run12,
+    run13, run14, run15,
+    run16, run17, run18,
+    run19, run20, run21,
     results
 )
 
@@ -28,15 +30,11 @@ def flatten(runs):
 
 
 datasets = [
-    ("Amp baseline (gain 300)", flatten([run1, run2, run3])),
-    ("Amp baseline (gain 200)", flatten([run4, run5, run6])),
+    ("10 Ω (gain 300)",         flatten([run10, run11, run12])),
+    ("100 Ω (gain 300)",        flatten([run13, run14, run15])),
+    ("1 kΩ (gain 300)",         flatten([run16, run17, run18])),
+    ("10 kΩ (gain 300)",        flatten([run19, run20, run21])),
     ("1 MΩ (gain 200)",         flatten([run7, run8, run9])),
-    # Pending data collection:
-    # ("10 Ω",   flatten([run_10ohm_a,  run_10ohm_b,  run_10ohm_c ])),
-    # ("100 Ω",  flatten([run_100ohm_a, run_100ohm_b, run_100ohm_c])),
-    # ("1 kΩ",   flatten([run_1k_a,     run_1k_b,     run_1k_c    ])),
-    # ("10 kΩ",  flatten([run_10k_a,    run_10k_b,    run_10k_c   ])),
-    # ("100 kΩ", flatten([run_100k_a,   run_100k_b,   run_100k_c  ])),
 ]
 
 n = len(datasets)
