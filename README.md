@@ -1,6 +1,6 @@
 # Johnson Noise as an Experimental Test of the Jaynes Maximum-Entropy Framework
 
-PHYS 120B · San José State University · Spring 2026
+San José State University · Spring 2026
 Author: Akhilan Celeis Raja · Advisor: Dr. Peter Beyersdorf
 
 ## Quick Links
